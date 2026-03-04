@@ -13,7 +13,7 @@ public:
     rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 
-    this->declare_parameter("tracking_ros.vehicle_local_position_topic", "/fmu/in/vehicle_local_position");
+    this->declare_parameter("tracking_ros.vehicle_local_position_topic", "/fmu/out/vehicle_local_position");
     local_pose_topic_ros2_ = this->get_parameter("tracking_ros.vehicle_local_position_topic").as_string();
     local_pose_topic_ros1_ = "mavros/local_position/pose";
     local_vel_topic_ros1_  = "mavros/local_position/velocity";
