@@ -40,7 +40,7 @@ private:
     ctbr_msg.body_rate.z = -msg->yaw;
 
     // thrust_body[2] is FRD z-axis (negative = upward); negate to get positive [0,1] thrust
-    ctbr_msg.thrust = msg->thrust_body[2]; // -msg->thrust_body[2];
+    ctbr_msg.thrust = -msg->thrust_body[2];
 
     setpoint_pub_->publish(ctbr_msg);
   }

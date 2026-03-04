@@ -10,6 +10,7 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(px4_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 add_executable(sensor_combined_to_imu_node src/sensor_combined_to_imu_node.cpp)
 ament_target_dependencies(sensor_combined_to_imu_node
@@ -25,9 +26,17 @@ ament_target_dependencies(setpoint_conversion
   mavros_msgs
 )
 
+add_executable(local_pose_conversion src/local_pose_conversion.cpp)
+ament_target_dependencies(local_pose_conversion
+  rclcpp
+  geometry_msgs
+  px4_msgs
+)
+
 install(TARGETS
   sensor_combined_to_imu_node
   setpoint_conversion
+  local_pose_conversion
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -13,6 +13,7 @@
   <depend>sensor_msgs</depend>
   <depend>px4_msgs</depend>
   <depend>mavros_msgs</depend>
+  <depend>geometry_msgs</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
