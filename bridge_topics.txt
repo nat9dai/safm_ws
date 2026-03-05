@@ -1,0 +1,3 @@
+/mavros/local_position/pose[geometry_msgs/msg/PoseStamped
+/mavros/local_position/velocity[geometry_msgs/msg/TwistStamped
+/mavros/setpoint_raw/attitude]mavros_msgs/msg/AttitudeTarget
