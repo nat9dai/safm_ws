@@ -1,16 +1,6 @@
-[submodule "src/vision_opencv"]
-	path = src/vision_opencv
-	url = https://github.com/ros-perception/vision_opencv.git
-	branch = humble
-[submodule "src/oak_ffc_4p_driver_ros2"]
-	path = src/oak_ffc_4p_driver_ros2
-	url = https://github.com/lis-epfl/oak_ffc_4p_driver_ros2
 [submodule "src/px4_msgs"]
 	path = src/px4_msgs
 	url = https://github.com/PX4/px4_msgs.git
-[submodule "src/mavros"]
-	path = src/mavros
-	url = https://github.com/mavlink/mavros.git
 [submodule "src/ros1_bridge"]
 	path = src/ros1_bridge
 	url = https://github.com/ros2/ros1_bridge.git

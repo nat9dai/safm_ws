@@ -7,7 +7,7 @@ sudo apt-get install ros-foxy-mavros-msgs -y
 sudo apt-get install ros-noetic-mavros ros-noetic-mavros-extras -y
 ```
 
-### Build px4_msgs in ROS1 workspace:
+### Build px4_msgs in ROS1 workspace (skip this step if you don't want to "bridge-all-topics"):
 ```bash
 cd ~
 git clone https://github.com/nat9dai/ros1_msgs_ws.git
