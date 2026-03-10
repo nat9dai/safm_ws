@@ -2,7 +2,7 @@
 set -e
 
 source /opt/ros/noetic/setup.bash
-source ~/wsa/ros1_msgs_ws/devel/setup.bash # don't need; px4_msgs built on Noetic
+# source ~/wsa/ros1_msgs_ws/devel/setup.bash # need this if you want to "bridge-all-topics"
 source /opt/ros/foxy/setup.bash
 source install/local_setup.bash
 

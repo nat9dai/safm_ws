@@ -37,6 +37,7 @@ roscore # or launch a ROS1 launch
 ```
 Second terminal:
 ```bash
-source /opt/ros/noetic/setup.bash && source ~/ros1_msgs_ws/devel/setup.bash && source /opt/ros/foxy/setup.bash && source ~/safm_ws/install/local_setup.bash
-ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+./ros1_bridge.sh 1 # -> bridge all topics (frequencies drop a lot)
+    or
+./ros1_bridge.sh 2 # -> bridge specified topics (bridge_topics.yaml)
 ```
