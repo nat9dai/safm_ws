@@ -12,8 +12,8 @@ topics:
     type: sensor_msgs/msg/Imu
     queue_size: 10
 
-services_1_to_2:
+services_2_to_1:
   - service: /mavros/set_mode
-    type: mavros_msgs/srv/SetMode
+    type: mavros_msgs/SetMode
   - service: /mavros/cmd/arming
-    type: mavros_msgs/srv/CommandBool
+    type: mavros_msgs/CommandBool
