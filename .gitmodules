@@ -4,3 +4,6 @@
 [submodule "src/ros1_bridge"]
 	path = src/ros1_bridge
 	url = https://github.com/ros2/ros1_bridge.git
+[submodule "src/drone_racing"]
+	path = src/drone_racing
+	url = git@github.com:JulyThirteenth/drone_racing.git
