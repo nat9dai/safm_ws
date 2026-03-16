@@ -11,6 +11,9 @@ topics:
   - topic: /mavros/imu/data_raw
     type: sensor_msgs/msg/Imu
     queue_size: 10
+  - topic: /mavros/vision_pose/pose
+    type: geometry_msgs/msg/PoseStamped
+    queue_size: 10
 
 services_2_to_1:
   - service: /mavros/set_mode
