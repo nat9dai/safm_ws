@@ -6,14 +6,14 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='conversion_pkg',
-            executable='local_pose_conversion',
-            name='local_pose_conversion',
+            executable='sensor_combined_to_imu_node',
+            name='sensor_combined_to_imu_node',
             output='screen',
         ),
         Node(
             package='conversion_pkg',
-            executable='setpoint_conversion',
-            name='setpoint_conversion',
+            executable='odom_to_visual_odom',
+            name='odom_to_visual_odom',
             output='screen',
         ),
     ])

@@ -1,19 +1,7 @@
 topics:
-  - topic: /mavros/local_position/pose
-    type: geometry_msgs/msg/PoseStamped
-    queue_size: 10
-  - topic: /mavros/local_position/velocity_local
-    type: geometry_msgs/msg/TwistStamped
-    queue_size: 10
-  - topic: /mavros/setpoint_raw/attitude
-    type: mavros_msgs/msg/AttitudeTarget
-    queue_size: 10
-  - topic: /mavros/imu/data_raw
+  - topic: /imu/data
     type: sensor_msgs/msg/Imu
     queue_size: 10
-
-services_2_to_1:
-  - service: /mavros/set_mode
-    type: mavros_msgs/SetMode
-  - service: /mavros/cmd/arming
-    type: mavros_msgs/CommandBool
+  - topic: /d2vins/odometry
+    type: nav_msgs/msg/Odometry
+    queue_size: 10

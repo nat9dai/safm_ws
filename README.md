@@ -3,8 +3,7 @@
 ## Working with ros1_bridge
 ### Install some dependencies:
 ```bash
-sudo apt-get install ros-foxy-mavros-msgs -y
-sudo apt-get install ros-noetic-mavros ros-noetic-mavros-extras -y
+
 ```
 
 ### Build px4_msgs in ROS1 workspace (skip this step if you don't want to "bridge-all-topics"):
