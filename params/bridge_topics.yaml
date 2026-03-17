@@ -1,5 +1,5 @@
 topics:
-  - topic: /imu/data
+  - topic: /mavros/imu/data_raw
     type: sensor_msgs/msg/Imu
     queue_size: 10
   - topic: /d2vins/odometry
