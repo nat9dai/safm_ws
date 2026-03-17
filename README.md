@@ -1,5 +1,25 @@
 # SAFM Workspace
 
+## Install some dependencies:
+```bash
+# For prepare.sh
+sudo apt install socat
+
+# Install Micro XRCE-DDS Agent
+git clone -b v2.4.3 https://github.com/eProsima/Micro-XRCE-DDS-Agent.git
+cd Micro-XRCE-DDS-Agent
+mkdir build
+cd build
+cmake ..
+make -j8 # adjust this according to CPU's core count
+sudo make install
+sudo ldconfig /usr/local/lib/
+
+# Install ROS2 Foxy
+
+# Install ROS1 Noetic
+``` 
+
 ## Working with ros1_bridge
 
 ### Build px4_msgs in ROS1 workspace (skip this step if you don't want to "bridge-all-topics"):
