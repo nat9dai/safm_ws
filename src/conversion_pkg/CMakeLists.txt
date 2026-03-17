@@ -10,12 +10,17 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(px4_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)
+
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 add_executable(sensor_combined_to_imu_node src/sensor_combined_to_imu_node.cpp)
 ament_target_dependencies(sensor_combined_to_imu_node
   rclcpp
   sensor_msgs
   px4_msgs
+  Eigen3
 )
 
 add_executable(odom_to_visual_odom src/odom_to_visual_odom.cpp)
@@ -24,6 +29,7 @@ ament_target_dependencies(odom_to_visual_odom
   nav_msgs
   px4_msgs
   geometry_msgs
+  Eigen3
 )
 
 install(TARGETS

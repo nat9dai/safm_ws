@@ -4,9 +4,17 @@ odom_to_visual_odom:
     odom_topic: /d2vins/odometry
     vrpn_topic: /mavros/vision_pose/pose
     visual_odom_topic: /fmu/in/vehicle_visual_odometry
+    input_world_frame: "ENU"
+    output_world_frame: "NED"
+    input_body_frame: "FLU"
+    output_body_frame: "FRD"
 
 sensor_combined_to_imu:
   ros__parameters:
     sensor_combined_topic: /fmu/out/sensor_combined
     vehicle_attitude_topic: /fmu/out/vehicle_attitude
-    imu_topic: /imu/data
+    imu_topic: /mavros/imu/data_raw
+    input_world_frame: "NED"
+    output_world_frame: "ENU"
+    input_body_frame: "FRD"
+    output_body_frame: "FLU"
