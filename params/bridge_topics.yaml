@@ -1,10 +1,12 @@
-topics:
-  - topic: /mavros/imu/data_raw
-    type: sensor_msgs/msg/Imu
-    queue_size: 10
+topics_1_to_2:
   - topic: /d2vins/odometry
     type: nav_msgs/msg/Odometry
     queue_size: 10
   - topic: /mavros/vision_pose/pose
     type: geometry_msgs/msg/PoseStamped
+    queue_size: 10
+
+topics_2_to_1:
+  - topic: /mavros/imu/data_raw
+    type: sensor_msgs/msg/Imu
     queue_size: 10

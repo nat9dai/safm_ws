@@ -9,4 +9,4 @@ sensor_combined_to_imu:
   ros__parameters:
     sensor_combined_topic: /fmu/out/sensor_combined
     vehicle_attitude_topic: /fmu/out/vehicle_attitude
-    imu_topic: /imu/data
+    imu_topic: /mavros/imu/data_raw
