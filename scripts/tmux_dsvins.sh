@@ -7,7 +7,7 @@ set -e # Exit immediately if an error occurs
 GCS_IP="192.168.1.100"
 SESSION_NAME="dsvins_session"
 ROS1_SOURCE="source /opt/ros/noetic/setup.bash"
-WS_DIR="$HOME/wyc/"
+WS_DIR="$HOME/wsa/src/"
 
 # Kill old session
 tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
