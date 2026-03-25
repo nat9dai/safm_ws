@@ -12,34 +12,43 @@ WS_DIR="$HOME/wyc/"
 # Kill old session
 tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
 
-# Create session and split layout: LEFT, RIGHT-TOP , RIGHT-BOTTOM
+# Create session
 tmux new-session -d -s "$SESSION_NAME" -c "$WS_DIR"
+
+# Split layout
 tmux split-window -h -t "$SESSION_NAME" -c "$WS_DIR"
+
 readarray -t PANES < <(tmux list-panes -t "$SESSION_NAME" -F '#{pane_id}')
 
 LEFT_PANE="${PANES[0]}"
 RIGHT_PANE="${PANES[1]}"
+
 BOT_LEFT_PANE=$(tmux split-window -v -t "$LEFT_PANE" -c "$WS_DIR" -P -F '#{pane_id}')
 BOT_RIGHT_PANE=$(tmux split-window -v -t "$RIGHT_PANE" -c "$WS_DIR" -P -F '#{pane_id}')
 
-# LEFT
 tmux send-keys -t "$LEFT_PANE" "cd $WS_DIR && $ROS1_SOURCE" C-m
-tmux send-keys -t "$LEFT_PANE" "roslaunch mavros px4.launch fcu_url:=\"/dev/ttyTHS0:3000000\" gcs_url:=\"udp://@${GCS_IP}:14550\"" C-m
+tmux send-keys -t "$LEFT_PANE" "rostopic hz /mavros/imu/data_raw" C-m
 
-# RIGHT-TOP for image driver
+# RIGHT-TOP - Camera
 tmux send-keys -t "$RIGHT_PANE" "cd ${WS_DIR}oak_ffc_4p_ros" C-m
 tmux send-keys -t "$RIGHT_PANE" "sleep 2 && ./start_docker.sh 1" C-m
 tmux send-keys -t "$RIGHT_PANE" "source ./devel/setup.bash" C-m
 tmux send-keys -t "$RIGHT_PANE" "roslaunch oak_ffc_4p_ros OV9782.launch" C-m
 
-# BOTTOM LEFT for D2SLAM
+# LEFT-BOTTOM - D2SLAM
 tmux send-keys -t "$BOT_LEFT_PANE" "cd ${WS_DIR}D2SLAM" C-m
 tmux send-keys -t "$BOT_LEFT_PANE" "sleep 4 && ./start_docker.sh 1" C-m
 tmux send-keys -t "$BOT_LEFT_PANE" "source ./devel/setup.bash" C-m
 tmux send-keys -t "$BOT_LEFT_PANE" "roslaunch d2vins quadcam.launch" C-m
 
-# BOTTOM RIGHT for odom -> mavros vison pose
-tmux send-keys -t "$BOT_RIGHT_PANE" "cd ${WS_DIR}adaptor_ws/" C-m
-tmux send-keys -t "$BOT_RIGHT_PANE" "./devel/setup.bash" C-m
-tmux send-keys -t "$BOT_RIGHT_PANE" "roslaunch vins_to_mavros vins_to_mavros.launch" C-m
+# RIGHT-BOTTOM - VINS -> MAVROS
+tmux send-keys -t "$BOT_RIGHT_PANE" "cd ${WS_DIR}" C-m
+tmux send-keys -t "$BOT_RIGHT_PANE" "source /opt/ros/noetic/setup.bash" C-m
+tmux send-keys -t "$BOT_RIGHT_PANE" "rostopic echo /d2vins/odometry " C-m
+
+# Adjust layout
+tmux select-layout -t "$SESSION_NAME" tiled
+
+# Attach to session so it shows in current terminal
+tmux attach -t "$SESSION_NAME"
 
