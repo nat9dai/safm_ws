@@ -13,11 +13,17 @@ public:
     this->declare_parameter<std::string>("odom_topic", "/d2vins/odometry");
     this->declare_parameter<std::string>("vrpn_topic", "/vrpn_client_node/pose");
     this->declare_parameter<std::string>("visual_odom_topic", "fmu/in/vehicle_visual_odometry");
+    this->declare_parameter<std::string>("realsense_odom_topic", "/camera/odom/sample");
+
+    // realsense t265
+    this->declare_parameter<bool>("use_realsense", false);
+    use_realsense_ = this->get_parameter("use_realsense").as_bool();
 
     use_vrpn_ = this->get_parameter("use_vrpn").as_bool();
-    auto odom_topic = this->get_parameter("odom_topic").as_string();
+    auto odom_topic = use_realsense_ ? this->get_parameter("realsense_odom_topic").as_string() : this->get_parameter("odom_topic").as_string();
     auto vrpn_topic = this->get_parameter("vrpn_topic").as_string();
     auto visual_odom_topic = this->get_parameter("visual_odom_topic").as_string();
+
 
     // QoS profile compatible with PX4 micro-XRCE-DDS bridge
     rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
@@ -34,12 +40,46 @@ public:
     visual_odom_pub_ = this->create_publisher<px4_msgs::msg::VehicleOdometry>(visual_odom_topic, 10);
 
     RCLCPP_INFO(this->get_logger(), "use_vrpn: %s", use_vrpn_ ? "true" : "false");
+    RCLCPP_INFO(this->get_logger(), "use_realsense: %s", use_realsense_ ? "true" : "false");
   }
 
 private:
   void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
   {
     if (use_vrpn_) return;
+
+    // T265 mounting correction: lens UP, USB RIGHT — applied before ENU->NED
+    if (use_realsense_) {
+        // constexpr float qrx=0.0f, qry=0.7071f, qrz=0.0f, qrw=0.7071f;
+        constexpr float qrx=0.5f, qry=0.5f, qrz=-0.5f, qrw=0.5f;
+
+        // Rotate position
+        // float px = msg->pose.pose.position.x;
+        // float py = msg->pose.pose.position.y;
+        // float pz = msg->pose.pose.position.z;
+        // msg->pose.pose.position.x =  py;
+        // msg->pose.pose.position.y = -px;
+        // msg->pose.pose.position.z = -pz;
+
+        // Rotate orientation: q_body = q_rot * q_cam
+        float qcx = msg->pose.pose.orientation.x;
+        float qcy = msg->pose.pose.orientation.y;
+        float qcz = msg->pose.pose.orientation.z;
+        float qcw = msg->pose.pose.orientation.w;
+        msg->pose.pose.orientation.x = qrw*qcx + qrx*qcw + qry*qcz - qrz*qcy;
+        msg->pose.pose.orientation.y = qrw*qcy - qrx*qcz + qry*qcw + qrz*qcx;
+        msg->pose.pose.orientation.z = qrw*qcz + qrx*qcy - qry*qcx + qrz*qcw;
+        msg->pose.pose.orientation.w = qrw*qcw - qrx*qcx - qry*qcy - qrz*qcz;
+
+        // Rotate velocity
+        // NOTE: Not used
+        // float vx = msg->twist.twist.linear.x;
+        // float vy = msg->twist.twist.linear.y;
+        // float vz = msg->twist.twist.linear.z;
+        // msg->twist.twist.linear.x =  vy;
+        // msg->twist.twist.linear.y = -vx;
+        // msg->twist.twist.linear.z = -vz;
+    }
 
     px4_msgs::msg::VehicleOdometry visual_odom_msg;
 
@@ -115,6 +155,7 @@ private:
   }
 
   bool use_vrpn_;
+  bool use_realsense_;
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr vrpn_sub_;
   rclcpp::Publisher<px4_msgs::msg::VehicleOdometry>::SharedPtr visual_odom_pub_;
