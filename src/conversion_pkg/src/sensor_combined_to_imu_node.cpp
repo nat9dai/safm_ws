@@ -20,7 +20,7 @@ public:
     auto vehicle_attitude_topic = this->get_parameter("vehicle_attitude_topic").as_string();
     auto imu_topic = this->get_parameter("imu_topic").as_string();
     publish_orientation_ = this->get_parameter("publish_orientation").as_bool();
-    max_attitude_age_us_ = this->get_parameter("max_attitude_age_us").as_long();
+    max_attitude_age_us_ = this->get_parameter("max_attitude_age_us").as_int();
 
     // QoS profile compatible with PX4 micro-XRCE-DDS bridge
     rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
