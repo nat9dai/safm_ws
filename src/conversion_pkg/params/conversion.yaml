@@ -12,3 +12,5 @@ sensor_combined_to_imu:
         sensor_combined_topic: /fmu/out/sensor_combined
         vehicle_attitude_topic: /fmu/out/vehicle_attitude
         imu_topic: /mavros/imu/data_raw
+        publish_orientation: false
+        max_attitude_age_us: 5000
