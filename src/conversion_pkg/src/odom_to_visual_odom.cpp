@@ -48,37 +48,61 @@ private:
   {
     if (use_vrpn_) return;
 
-    // T265 mounting correction: lens UP, USB RIGHT — applied before ENU->NED
+    // Camera mounting correction: lens pointing UP (-90 deg pitch)
+    //   cam FLU X (forward) -> body +Z (up)
+    //   cam FLU Y (left)    -> body +Y (left)
+    //   cam FLU Z (up)      -> body -X (backward)
+    // q_cam_body = Ry(+90deg) = [w=s, x=0, y=s, z=0], applied as RIGHT multiply:
+    //   q_world_body = q_world_cam * q_cam_body
     if (use_realsense_) {
-        // constexpr float qrx=0.0f, qry=0.7071f, qrz=0.0f, qrw=0.7071f;
-        constexpr float qrx=0.5f, qry=0.5f, qrz=-0.5f, qrw=0.5f;
-
-        // Rotate position
-        // float px = msg->pose.pose.position.x;
-        // float py = msg->pose.pose.position.y;
-        // float pz = msg->pose.pose.position.z;
-        // msg->pose.pose.position.x =  py;
-        // msg->pose.pose.position.y = -px;
-        // msg->pose.pose.position.z = -pz;
-
-        // Rotate orientation: q_body = q_rot * q_cam
+        constexpr float s = 0.7071067811865476f;
+        // q_cam_body = [w=s, x=0, y=s, z=0]
+        float qcw = msg->pose.pose.orientation.w;
         float qcx = msg->pose.pose.orientation.x;
         float qcy = msg->pose.pose.orientation.y;
         float qcz = msg->pose.pose.orientation.z;
-        float qcw = msg->pose.pose.orientation.w;
-        msg->pose.pose.orientation.x = qrw*qcx + qrx*qcw + qry*qcz - qrz*qcy;
-        msg->pose.pose.orientation.y = qrw*qcy - qrx*qcz + qry*qcw + qrz*qcx;
-        msg->pose.pose.orientation.z = qrw*qcz + qrx*qcy - qry*qcx + qrz*qcw;
-        msg->pose.pose.orientation.w = qrw*qcw - qrx*qcx - qry*qcy - qrz*qcz;
+        // q_world_body = q_world_cam * Ry(+90): [s*(qcw-qcy), s*(qcx-qcz), s*(qcw+qcy), s*(qcx+qcz)]
+        msg->pose.pose.orientation.w = s*(qcw - qcy);
+        msg->pose.pose.orientation.x = s*(qcx - qcz);
+        msg->pose.pose.orientation.y = s*(qcw + qcy);
+        msg->pose.pose.orientation.z = s*(qcx + qcz);
 
-        // Rotate velocity
-        // NOTE: Not used
-        // float vx = msg->twist.twist.linear.x;
-        // float vy = msg->twist.twist.linear.y;
-        // float vz = msg->twist.twist.linear.z;
-        // msg->twist.twist.linear.x =  vy;
-        // msg->twist.twist.linear.y = -vx;
-        // msg->twist.twist.linear.z = -vz;
+        // RealSense world frame is FLU (x=forward, y=left, z=up).
+        // Downstream code expects ENU (x=East, y=North, z=up).
+        // Rotate world frame: FLU -> ENU via Rz(+90): ENU_x=-FLU_y, ENU_y=FLU_x
+        // Position
+        float px = msg->pose.pose.position.x;
+        float py = msg->pose.pose.position.y;
+        msg->pose.pose.position.x = -py;  // ENU_x = East = -left
+        msg->pose.pose.position.y =  px;  // ENU_y = North = forward
+
+        // Orientation: q_ENU_body = Rz(+90) * q_FLU_body = [s,0,0,s] * q
+        float bw = msg->pose.pose.orientation.w;
+        float bx = msg->pose.pose.orientation.x;
+        float by = msg->pose.pose.orientation.y;
+        float bz = msg->pose.pose.orientation.z;
+        msg->pose.pose.orientation.w = s*(bw - bz);
+        msg->pose.pose.orientation.x = s*(bx - by);
+        msg->pose.pose.orientation.y = s*(bx + by);
+        msg->pose.pose.orientation.z = s*(bw + bz);
+
+        // Covariance: swap x-x [0] and y-y [7] to match ENU ordering
+        std::swap(msg->pose.covariance[0], msg->pose.covariance[7]);
+
+        // Rotate velocity: cam FLU -> body FLU via Ry(-90): {-vz, vy, vx}
+        float vx = msg->twist.twist.linear.x;
+        float vy = msg->twist.twist.linear.y;
+        float vz = msg->twist.twist.linear.z;
+        msg->twist.twist.linear.x = -vz;
+        msg->twist.twist.linear.y =  vy;
+        msg->twist.twist.linear.z =  vx;
+
+        float wx = msg->twist.twist.angular.x;
+        float wy = msg->twist.twist.angular.y;
+        float wz = msg->twist.twist.angular.z;
+        msg->twist.twist.angular.x = -wz;
+        msg->twist.twist.angular.y =  wy;
+        msg->twist.twist.angular.z =  wx;
     }
 
     px4_msgs::msg::VehicleOdometry visual_odom_msg;
