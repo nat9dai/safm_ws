@@ -13,3 +13,6 @@
 [submodule "src/driver-oak_ffc_4p_ros"]
 	path = src/driver-oak_ffc_4p_ros
 	url = https://github.com/nat9dai/driver-oak_ffc_4p_ros.git
+[submodule "src/realsense-ros"]
+	path = src/realsense-ros
+	url = https://github.com/nat9dai/realsense-ros.git
