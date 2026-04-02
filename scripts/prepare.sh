@@ -26,14 +26,12 @@ set -e  # Exit on any error
 # Environment Variable Validation
 # ============================================================================
 
-
 echo "======================================"
-echo "Rebooting PX4 via MAVLink Shell... Please wait..."
+echo " Jetson Max Performance Mode"
 echo "======================================"
 
-# Reboot PX4 using MAVLink Shell
-$HOME/safm_ws/src/tools/mavlink_shell/reboot_px4_mavlink.sh  && echo "PX4 reboot command sent successfully."
-
+sudo nvpmodel -m 0
+sudo jetson_clocks
 
 echo "======================================"
 echo "sync with remote time server if ssh connected..."
@@ -50,6 +48,13 @@ fi
 #         sudo ntpdate -u "$REMOTE_IP" && echo "time already sync with $REMOTE_IP."
 #     fi
 # fi
+
+echo "======================================"
+echo "Rebooting PX4 via MAVLink Shell... Please wait..."
+echo "======================================"
+
+# Reboot PX4 using MAVLink Shell
+$HOME/safm_ws/src/tools/mavlink_shell/reboot_px4_mavlink.sh  && echo "PX4 reboot command sent successfully."
 
 echo "======================================"
 echo "Checking Environment Variables..."
