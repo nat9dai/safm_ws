@@ -54,7 +54,7 @@ echo "Rebooting PX4 via MAVLink Shell... Please wait..."
 echo "======================================"
 
 # Reboot PX4 using MAVLink Shell
-$HOME/safm_ws/src/tools/mavlink_shell/reboot_px4_mavlink.sh  && echo "PX4 reboot command sent successfully."
+$HOME/wsa/safm_ws/src/tools/mavlink_shell/reboot_px4_mavlink.sh  && echo "PX4 reboot command sent successfully."
 
 echo "======================================"
 echo "Checking Environment Variables..."
@@ -129,7 +129,7 @@ echo ""
 echo "======================================"
 echo "Starting PX4 MicroXRCE-DDS Agent..."
 echo "======================================"
-PX4_MICRODDS_CMD="MicroXRCEAgent serial --dev /dev/ttyTHS0 -b 3000000"
+PX4_MICRODDS_CMD="MicroXRCEAgent serial --dev /dev/ttyTHS0 -b 2000000"
 start_screen_session "px4_microdds" "$PX4_MICRODDS_CMD"
 
 # ============================================================================
@@ -168,6 +168,24 @@ echo "Starting ROS1 Bridge..."
 echo "======================================"
 screen -dmS "ros1_bridge" bash -c "cd $WORKSPACE_DIR && ./scripts/ros1_bridge.sh 2; exec bash"
 echo "Screen session 'ros1_bridge' started"
+sleep 1
+
+# ============================================================================
+# Module 5: KF VIO PnP
+# ============================================================================
+echo ""
+echo "======================================"
+echo "Starting KF VIO PnP..."
+echo "======================================"
+
+screen -dmS "kf_vio_pnp" bash -c "
+source /opt/ros/noetic/setup.bash && \
+source ~/wyc/kf_vio_pnp_ws/devel/setup.bash && \
+taskset -c 7 roslaunch kf_vio_pnp kf_vio_pnp.launch;
+exec bash
+"
+
+echo "Screen session 'kf_vio_pnp' started"
 sleep 1
 
 # ============================================================================

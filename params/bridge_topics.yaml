@@ -4,6 +4,8 @@ topics:
     queue_size: 10
   - topic: /d2vins/odometry
     type: nav_msgs/msg/Odometry
+  - topic: /kf_vio_pnp/odometry
+    type: nav_msgs/msg/Odometry
     queue_size: 10
   - topic: /mavros/vision_pose/pose
     type: geometry_msgs/msg/PoseStamped
