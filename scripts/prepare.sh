@@ -37,7 +37,7 @@ echo "======================================"
 echo "sync with remote time server if ssh connected..."
 echo "======================================"
 
-export TIMESYNC_IP="192.168.1.103"
+export TIMESYNC_IP="192.168.50.53"
 if command -v ntpdate >/dev/null 2>&1; then
     sudo ntpdate -u "$TIMESYNC_IP" && echo "time already sync with $TIMESYNC_IP."
 fi
@@ -55,6 +55,8 @@ echo "======================================"
 
 # Reboot PX4 using MAVLink Shell
 $HOME/wsa/safm_ws/src/tools/mavlink_shell/reboot_px4_mavlink.sh  && echo "PX4 reboot command sent successfully."
+sleep 5
+
 
 echo "======================================"
 echo "Checking Environment Variables..."
@@ -181,7 +183,7 @@ echo "======================================"
 screen -dmS "kf_vio_pnp" bash -c "
 source /opt/ros/noetic/setup.bash && \
 source ~/wyc/kf_vio_pnp_ws/devel/setup.bash && \
-taskset -c 7 roslaunch kf_vio_pnp kf_vio_pnp.launch;
+taskset -c 7 roslaunch kf_vio_pnp kf_vio_pnp_cpp.launch;
 exec bash
 "
 
