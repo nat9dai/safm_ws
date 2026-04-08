@@ -3,6 +3,7 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <px4_msgs/msg/vehicle_odometry.hpp>
 #include <limits>
+#include <cmath>
 
 class OdomToVisualOdom : public rclcpp::Node
 {
@@ -17,7 +18,20 @@ public:
 
     // realsense t265
     this->declare_parameter<bool>("use_realsense", false);
+    this->declare_parameter<double>("initial_x", 0.0);
+    this->declare_parameter<double>("initial_y", 0.0);
+    this->declare_parameter<double>("initial_z", 0.0);
+    this->declare_parameter<double>("initial_yaw_deg", 0.0);
+
     use_realsense_ = this->get_parameter("use_realsense").as_bool();
+    initial_x_ = static_cast<float>(this->get_parameter("initial_x").as_double());
+    initial_y_ = static_cast<float>(this->get_parameter("initial_y").as_double());
+    initial_z_ = static_cast<float>(this->get_parameter("initial_z").as_double());
+    double yaw_rad = this->get_parameter("initial_yaw_deg").as_double() * M_PI / 180.0;
+    cos_yaw0_ = static_cast<float>(std::cos(yaw_rad));
+    sin_yaw0_ = static_cast<float>(std::sin(yaw_rad));
+    cos_half_yaw0_ = static_cast<float>(std::cos(yaw_rad / 2.0));
+    sin_half_yaw0_ = static_cast<float>(std::sin(yaw_rad / 2.0));
 
     use_vrpn_ = this->get_parameter("use_vrpn").as_bool();
     auto odom_topic = use_realsense_ ? this->get_parameter("realsense_odom_topic").as_string() : this->get_parameter("odom_topic").as_string();
@@ -88,6 +102,26 @@ private:
 
         // Covariance: swap x-x [0] and y-y [7] to match ENU ordering
         std::swap(msg->pose.covariance[0], msg->pose.covariance[7]);
+
+        // Transform from local ENU to global ENU frame
+        // p_global = Rz(initial_yaw) * p_local + t_initial
+        {
+            float lx = msg->pose.pose.position.x;
+            float ly = msg->pose.pose.position.y;
+            msg->pose.pose.position.x = cos_yaw0_ * lx - sin_yaw0_ * ly + initial_x_;
+            msg->pose.pose.position.y = sin_yaw0_ * lx + cos_yaw0_ * ly + initial_y_;
+            msg->pose.pose.position.z += initial_z_;
+
+            // q_global = q_yaw0 * q_local
+            float ow = msg->pose.pose.orientation.w;
+            float ox = msg->pose.pose.orientation.x;
+            float oy = msg->pose.pose.orientation.y;
+            float oz = msg->pose.pose.orientation.z;
+            msg->pose.pose.orientation.w = cos_half_yaw0_*ow - sin_half_yaw0_*oz;
+            msg->pose.pose.orientation.x = cos_half_yaw0_*ox - sin_half_yaw0_*oy;
+            msg->pose.pose.orientation.y = cos_half_yaw0_*oy + sin_half_yaw0_*ox;
+            msg->pose.pose.orientation.z = cos_half_yaw0_*oz + sin_half_yaw0_*ow;
+        }
 
         // Rotate velocity: cam FLU -> body FLU via Ry(-90): {-vz, vy, vx}
         float vx = msg->twist.twist.linear.x;
@@ -180,6 +214,9 @@ private:
 
   bool use_vrpn_;
   bool use_realsense_;
+  float initial_x_, initial_y_, initial_z_;
+  float cos_yaw0_, sin_yaw0_;
+  float cos_half_yaw0_, sin_half_yaw0_;
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr vrpn_sub_;
   rclcpp::Publisher<px4_msgs::msg::VehicleOdometry>::SharedPtr visual_odom_pub_;
