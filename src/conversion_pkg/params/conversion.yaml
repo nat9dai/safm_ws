@@ -1,11 +1,11 @@
 odom_to_visual_odom:
     ros__parameters:
         use_vrpn: false
-        odom_topic: /d2vins/odometry
+        odom_topic: /kf_vio_pnp/odometry
         vrpn_topic: /mavros/vision_pose/pose
         visual_odom_topic: /fmu/in/vehicle_visual_odometry
         realsense_odom_topic: /camera/pose/sample
-        use_realsense: true
+        use_realsense: false
         realsense_to_odom_d2vins: true
 
 sensor_combined_to_imu:
