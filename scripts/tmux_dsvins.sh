@@ -7,7 +7,7 @@ set -e # Exit immediately if an error occurs
 GCS_IP="192.168.1.100"
 SESSION_NAME="dsvins_session"
 ROS1_SOURCE="source /opt/ros/noetic/setup.bash"
-WS_DIR="$HOME/wsa/src/"
+WS_DIR="$HOME/wsa/safm_ws/src/"
 
 # Kill old session
 tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
@@ -30,7 +30,7 @@ tmux send-keys -t "$LEFT_PANE" "cd $WS_DIR && $ROS1_SOURCE" C-m
 tmux send-keys -t "$LEFT_PANE" "rostopic hz /mavros/imu/data_raw" C-m
 
 # RIGHT-TOP - Camera
-tmux send-keys -t "$RIGHT_PANE" "cd ${WS_DIR}oak_ffc_4p_ros" C-m
+tmux send-keys -t "$RIGHT_PANE" "cd ${WS_DIR}driver-oak_ffc_4p_ros" C-m
 tmux send-keys -t "$RIGHT_PANE" "sleep 2 && ./start_docker.sh 1" C-m
 tmux send-keys -t "$RIGHT_PANE" "source ./devel/setup.bash" C-m
 tmux send-keys -t "$RIGHT_PANE" "roslaunch oak_ffc_4p_ros OV9782.launch" C-m
