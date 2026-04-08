@@ -189,6 +189,24 @@ echo "Screen session 'kf_vio_pnp' started"
 sleep 1
 
 # ============================================================================
+# Module 6: Detection
+# ============================================================================
+echo ""
+echo "======================================"
+echo "Starting Detection..."
+echo "======================================"
+
+screen -dmS "detection" bash -c "
+source /opt/ros/noetic/setup.bash && \
+source ~/gyc/detect_aurco/ros_cpp/devel/setup.bash && \
+taskset -c 0,1 roslaunch omni_aruco_detector_cpp multi_gate_tracking_omni_aruco_detector.launch;
+exec bash
+"
+
+echo "Screen session 'detection' started"
+sleep 1
+
+# ============================================================================
 # Module 5: VRPN/Vicon Motion Capture Client
 # ============================================================================
 # Connects to Vicon motion capture system and publishes pose data to ROS2

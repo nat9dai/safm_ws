@@ -12,7 +12,7 @@ echo "Stopping all UAV system modules..."
 echo "======================================"
 
 # List of screen sessions to stop
-SESSIONS=("px4_microdds" "qgc_forward" "roscore" "ros1_bridge" "vicon_client" "vicon_bridge" "kf_vio_pnp")
+SESSIONS=("px4_microdds" "qgc_forward" "roscore" "ros1_bridge" "vicon_client" "vicon_bridge" "kf_vio_pnp" "detection")
 
 for session in "${SESSIONS[@]}"; do
     if screen -list | grep -q "$session"; then
